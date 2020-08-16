@@ -38,8 +38,7 @@ exports.signup = (req, res) => {
 };
 
 exports.signupnew = (req, res) => {
-  console.log("req", req.body);
-  const { username, email, password, password2 } = req.body;
+  const { username, email, password, password2, imagePath } = req.body;
   let errors = [];
 
   if (!username || !email || !password) {
@@ -62,7 +61,7 @@ exports.signupnew = (req, res) => {
     //   password,
     //   password2
     // });
-    res.send(JSON.stringify(errors));
+    res.send(JSON.stringify({ errors, status: false }));
   } else {
     User.findOne({ email: email }).then((user) => {
       if (user) {
@@ -74,33 +73,44 @@ exports.signupnew = (req, res) => {
         //   password,
         //   password2
         // });
-        res.send(JSON.stringify(errors));
+        res.send(JSON.stringify({ errors, status: false, email: email }));
       } else {
-        const newUser = new User({
-          username,
-          email,
-          password,
-        });
-
-        bcrypt.genSalt(10, (err, salt) => {
-          bcrypt.hash(newUser.password, salt, (err, hash) => {
-            if (err) throw err;
-            newUser.password = hash;
-            newUser
-              .save()
-              .then((user) => {
-                res.send(
-                  JSON.stringify({
-                    msg: "successfully registered",
-                    status: true,
-                    username: username,
-                  })
-                );
-                //  res.redirect("/users/login");
-              })
-              .catch((err) => console.log(err));
+        try {
+          const newUser = new User({
+            username,
+            email,
+            password,
+            imagePath,
           });
-        });
+
+          bcrypt.genSalt(10, (err, salt) => {
+            bcrypt.hash(newUser.password, salt, (err, hash) => {
+              if (err) throw err;
+              newUser.password = hash;
+              newUser
+                .save()
+                .then((user) => {
+                  res.send(
+                    JSON.stringify({
+                      msg: "successfully registered",
+                      status: true,
+                      username: username,
+                    })
+                  );
+                  //  res.redirect("/users/login");
+                })
+                .catch((err) => console.log(err));
+            });
+          });
+        } catch (error) {
+          res.send(
+            JSON.stringify({
+              msg: "registration failed",
+              status: false,
+              username: username,
+            })
+          );
+        }
       }
     });
   }
@@ -176,6 +186,7 @@ exports.signinnew = (req, res) => {
         username: user.username,
         email: user.email,
         accessToken: token,
+        imagePath: user.imagePath,
       });
     })
     .catch((err) => {
@@ -183,6 +194,4 @@ exports.signinnew = (req, res) => {
     });
 };
 
-exports.upload = (req,res) => {
-
-};
+exports.upload = (req, res) => {};

@@ -53,7 +53,7 @@ const filevalidation = (value) => {
   if (!value)
     return (
       <div className="alert alert-danger" role="alert">
-        Please upload a file 
+        Please upload a file
       </div>
     );
 };
@@ -74,6 +74,7 @@ export default class Register extends Component {
       message: "",
       loaded: 0,
       selectedFile: "",
+      imagePath: "",
     };
   }
   componentDidMount() {
@@ -114,7 +115,13 @@ export default class Register extends Component {
     const data = new FormData();
     data.append("file", this.state.selectedFile);
     // data.append("contentType", "multipart/form-data");
-    UserService.uploadFile(data).then((response) => console.log(response));
+    UserService.uploadFile(data).then((response) => {
+      
+      this.setState({
+        imagePath: response.data.destination,
+      });
+      console.log(response);
+    });
   }
   handleRegister(e) {
     e.preventDefault();
@@ -128,18 +135,26 @@ export default class Register extends Component {
     this.form.validateAll();
 
     if (this.checkBtn.context._errors.length === 0) {
+      debugger;
       AuthService.register(
         this.state.username,
         this.state.email,
-        this.state.password
+        this.state.password,
+        this.state.imagePath
       ).then(
         (response) => {
-          this.setState({
-            message: response.data.message,
-            successful: true,
-          });
-          localStorage.setItem("user", JSON.stringify(response.data));
-          this.props.history.push("/user");
+          debugger;
+          let result = response.data;
+          if (result.status) {
+            this.setState({
+              message: response.data.message,
+              successful: true,
+            });
+            localStorage.setItem("user", JSON.stringify(response.data));
+            //this.props.history.push("/login");
+          } else {
+            alert("failed");
+          }
         },
         (error) => {
           const resMessage =

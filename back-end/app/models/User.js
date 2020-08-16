@@ -4,6 +4,8 @@ const UserSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
+    unique: true,
+    lowercase: true,
   },
   email: {
     type: String,
@@ -12,6 +14,7 @@ const UserSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
+    minlength: 6,
   },
   createdAt: {
     type: Date,
@@ -19,7 +22,10 @@ const UserSchema = new mongoose.Schema({
   },
   updatedAt: {
     type: Date,
-    default: Date.now
+    default: Date.now,
+  },
+  imagePath: {
+    type: String,
   },
 });
 
