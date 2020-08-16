@@ -8,6 +8,7 @@ import { Progress } from "reactstrap";
 import AuthService from "../services/auth.service";
 
 import UserService from "../services/user.service";
+import { alertService } from "../services/alert.service";
 
 const required = (value) => {
   if (!value) {
@@ -116,7 +117,6 @@ export default class Register extends Component {
     data.append("file", this.state.selectedFile);
     // data.append("contentType", "multipart/form-data");
     UserService.uploadFile(data).then((response) => {
-      
       this.setState({
         imagePath: response.data.destination,
       });
@@ -150,10 +150,18 @@ export default class Register extends Component {
               message: response.data.message,
               successful: true,
             });
+            alertService.success(
+              "Successfully registered, please click login to see your profile",
+              {
+                autoClose: false,
+              }
+            );
             localStorage.setItem("user", JSON.stringify(response.data));
             //this.props.history.push("/login");
           } else {
-            alert("failed");
+            alertService.error("registration failed", {
+              autoClose: false,
+            });
           }
         },
         (error) => {

@@ -9,6 +9,7 @@ import Login from "./components/login.component";
 import Register from "./components/register.component";
 import Home from "./components/home.component";
 import Profile from "./components/profile.component";
+import { Alert } from "./components/alert.component";
 
 class App extends Component {
   constructor(props) {
@@ -87,6 +88,7 @@ class App extends Component {
           </nav>
 
           <div className="container mt-3">
+            <Alert />
             <Switch>
               <Route exact path={["/", "/home"]} component={Home} />
               <Route exact path="/login" component={Login} />
